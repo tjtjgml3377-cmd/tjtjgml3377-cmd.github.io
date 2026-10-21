@@ -1,0 +1,13 @@
+{
+  "name": "termuni-asan-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "터무늬 부동산 인텔리전스 — 아산시 부동산 빅데이터 대시보드 (빌드용 라이브러리 목록)",
+  "scripts": {
+    "build": "python build/build.py"
+  },
+  "dependencies": {
+    "echarts": "5.5.1",
+    "leaflet": "1.9.4"
+  }
+}

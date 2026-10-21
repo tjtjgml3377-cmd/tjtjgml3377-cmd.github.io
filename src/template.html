@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>터무늬 아산 부동산 인텔리전스</title>
+<meta name="description" content="아산시 인구·일자리·실거래·상권 빅데이터 대시보드 — 터무늬 부동산 인텔리전스">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>/*LEAFLET_CSS*/</style>
+<style>
+:root{
+  color-scheme: light;
+  --page:#f6f6f3; --surface:#fcfcfb; --surface-2:#f1f1ed; --ink:#0b0b0b; --ink-2:#52514e; --muted:#7d7b75;
+  --grid:#e6e5df; --axis:#c3c2b7; --border:rgba(11,11,11,.10); --tip-bg:#ffffff;
+  --brand:#0e5e57; --brand-2:#13867c; --brand-ink:#ffffff; --accent-wash:rgba(14,94,87,.08);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+  --q1:#cde2fb; --q2:#9ec5f4; --q3:#6da7ec; --q4:#3987e5; --q5:#256abf; --q6:#184f95; --q7:#0d366b;
+  --dv-neg:#2a78d6; --dv-pos:#e34948; --dv-mid:#f0efec; --other:#a8a69e;
+  --good:#0ca30c; --good-ink:#006300; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  --font:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232321; --ink:#f0efec; --ink-2:#c3c2b7; --muted:#8f8d86;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --tip-bg:#232321;
+    --brand:#2fb3a6; --brand-2:#46c9bb; --brand-ink:#06201d; --accent-wash:rgba(47,179,166,.12);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+    --q1:#0d366b; --q2:#184f95; --q3:#1c5cab; --q4:#2a78d6; --q5:#5598e7; --q6:#86b6ef; --q7:#cde2fb;
+    --dv-neg:#3987e5; --dv-pos:#e66767; --dv-mid:#383835; --other:#6b6a64; --good-ink:#0ca30c;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232321; --ink:#f0efec; --ink-2:#c3c2b7; --muted:#8f8d86;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --tip-bg:#232321;
+    --brand:#2fb3a6; --brand-2:#46c9bb; --brand-ink:#06201d; --accent-wash:rgba(47,179,166,.12);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+    --q1:#0d366b; --q2:#184f95; --q3:#1c5cab; --q4:#2a78d6; --q5:#5598e7; --q6:#86b6ef; --q7:#cde2fb;
+    --dv-neg:#3987e5; --dv-pos:#e66767; --dv-mid:#383835; --other:#6b6a64; --good-ink:#0ca30c;
+    --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--page);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--brand)}
+button,input,select{font-family:inherit;font-size:13px;color:var(--ink)}
+/* header */
+.top{position:sticky;top:0;z-index:1000;background:var(--surface);border-bottom:1px solid var(--border)}
+.top-in{max-width:1480px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:0 0 auto}
+.brand-t{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.brand-t b{font-size:17px;letter-spacing:-.02em;white-space:nowrap}
+.brand-t span{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-size:12px;white-space:nowrap}
+.icon-btn{white-space:nowrap;border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+.icon-btn:hover{background:var(--surface-2)}
+.tabs{max-width:1480px;margin:0 auto;padding:0 12px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:none;padding:10px 14px 11px;cursor:pointer;color:var(--ink-2);font-weight:600;font-size:13.5px;white-space:nowrap;border-bottom:2px solid transparent}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--brand);border-bottom-color:var(--brand)}
+main{max-width:1480px;margin:0 auto;padding:18px 20px 60px}
+.geobar{border-top:1px solid var(--border);background:var(--surface-2)}
+.geobar.on{background:rgba(208,59,59,.07);border-top-color:rgba(208,59,59,.35)}
+.geobar-in{max-width:1480px;margin:0 auto;padding:7px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.gb-t{font-weight:750;font-size:13px;white-space:nowrap}
+.geobar.on .gb-t{color:#d03b3b}
+.gsearch{width:300px}
+.gsearch input{height:32px;font-size:13px;border-width:1px}
+.gsearch .sug{top:36px}
+#g-r{height:32px;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:0 8px}
+.gchk{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink-2);white-space:nowrap;cursor:pointer}
+.gst{font-size:12.5px;color:var(--ink-2);flex:1;min-width:200px}
+.gchip{margin:-4px 0 12px;border-left-color:#d03b3b!important}
+@media (max-width:640px){.gsearch{width:100%}.gst{flex:1 1 100%;min-width:0;order:9;font-size:12px}.gst-more{display:none}.geobar-in{padding:6px 12px;gap:6px}.top{position:relative}.icon-btn{white-space:nowrap;padding:6px 8px}.brand-t b{font-size:15px}}
+.view{display:none}
+.view.on{display:block}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:4px 0 14px}
+.hero h1{margin:0;font-size:22px;letter-spacing:-.02em}
+.hero p{margin:4px 0 0;color:var(--ink-2);max-width:820px}
+/* filter bar */
+.fbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.fbar label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted);font-weight:600}
+.fbar select,.fbar input[type=text],.fbar input[type=search],.fbar input[type=number]{height:34px;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:0 10px;min-width:120px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;cursor:pointer;color:var(--ink-2);font-weight:600;white-space:nowrap}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--brand);color:var(--brand-ink)}
+.chk{flex-direction:row!important;align-items:center;gap:6px!important;color:var(--ink-2)!important;font-weight:500!important;font-size:13px!important;height:34px}
+.fnote{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
+/* grid & cards */
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px 12px;box-shadow:var(--shadow);min-width:0;display:flex;flex-direction:column}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+.card-h{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+.card-h h3{margin:0;font-size:14.5px;letter-spacing:-.01em}
+.card-h .sub{margin:2px 0 0;color:var(--muted);font-size:12px}
+.card-h .tools{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
+.tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--accent-wash);color:var(--brand);white-space:nowrap}
+.ch{width:100%;height:300px}
+.ch.h220{height:220px}.ch.h260{height:260px}.ch.h360{height:360px}.ch.h420{height:420px}.ch.h480{height:480px}
+.mapbox{width:100%;height:440px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.mapbox.h560{height:560px}
+.mapbox.h480{height:480px}
+.mapbox.h420{height:420px}
+@media (max-width:640px){.mapbox.h480,.mapbox.h420{height:360px}}
+.tblwrap{margin-top:8px}
+.tblwrap summary{cursor:pointer;color:var(--muted);font-size:12px;user-select:none}
+.tblwrap[open] summary{margin-bottom:6px}
+.scroll{max-height:360px;overflow:auto;border:1px solid var(--border);border-radius:8px}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+table.t th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:700;color:var(--ink-2);padding:7px 9px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer}
+table.t td{padding:6px 9px;border-bottom:1px solid var(--border);white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+table.t td.n,table.t th.n{text-align:right}
+table.t tr:hover td{background:var(--accent-wash)}
+table.t tr.sel td{background:var(--accent-wash)}
+table.t th.sorted::after{content:" ▾";color:var(--brand)}
+table.t th.sorted.asc::after{content:" ▴"}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);min-width:0}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v{font-size:22px;font-weight:750;letter-spacing:-.02em;margin-top:2px;white-space:nowrap}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--ink-2);margin-left:2px}
+.kpi .d{font-size:12px;margin-top:2px;color:var(--ink-2)}
+.up{color:var(--good-ink)}.dn{color:var(--critical)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;background:var(--accent-wash);color:var(--brand);font-size:12px;font-weight:600;margin:2px}
+.chip button{border:0;background:none;cursor:pointer;color:var(--brand);font-size:14px;line-height:1;padding:0 4px}
+.note{font-size:12px;color:var(--muted);margin-top:6px}
+.warnbox{border-left:3px solid var(--warning);background:var(--surface-2);padding:8px 12px;border-radius:6px;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;white-space:nowrap}
+.b-crit{background:rgba(208,59,59,.14);color:var(--critical)}
+.b-ser{background:rgba(236,131,90,.16);color:#b8532b}
+.b-good{background:rgba(12,163,12,.12);color:var(--good-ink)}
+:root[data-theme="dark"] .b-ser{color:var(--serious)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* sliders */
+.wrow{display:grid;grid-template-columns:120px 1fr 34px;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-2);margin:4px 0}
+input[type=range]{accent-color:var(--brand);width:100%}
+/* radius */
+.rlayout{display:grid;grid-template-columns:380px minmax(0,1fr);gap:14px}
+.rpanel{display:flex;flex-direction:column;gap:12px}
+.search{position:relative}
+.search input{width:100%;height:42px;border:1.5px solid var(--brand);border-radius:10px;padding:0 12px;background:var(--surface);font-size:14px}
+.sug{position:absolute;left:0;right:0;top:46px;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);z-index:2000;max-height:380px;overflow:auto;display:none}
+.sug div{padding:8px 12px;cursor:pointer;display:flex;gap:8px;align-items:baseline;border-bottom:1px solid var(--border)}
+.sug div:last-child{border-bottom:0}
+.sug div:hover,.sug div.on{background:var(--accent-wash)}
+.sug .k{font-size:10.5px;font-weight:700;color:var(--brand);flex:0 0 auto;min-width:46px}
+.sug .a{font-size:11.5px;color:var(--muted);margin-left:auto;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.rbtns{display:flex;flex-wrap:wrap;gap:6px}
+.rbtns button{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:5px 9px;cursor:pointer;font-weight:600;color:var(--ink-2)}
+.rbtns button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.rbtns button:disabled{cursor:not-allowed}
+.rinfo{font-size:13px;color:var(--ink-2)}
+.rinfo b{color:var(--ink)}
+.empty{padding:40px 10px;text-align:center;color:var(--muted)}
+/* ===== 홈 ===== */
+.tab-all{margin-left:auto;color:var(--brand)!important}
+.h-hero{position:relative;border-radius:22px;overflow:hidden;background:#0b3f3a;color:#f2f7f6;margin-bottom:0}
+:root[data-theme="dark"] .h-hero,:root[data-theme="dark"] .h-vision,:root[data-theme="dark"] .h-cta{background:#0a2624}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .h-hero,:root:not([data-theme="light"]) .h-vision,:root:not([data-theme="light"]) .h-cta{background:#0a2624}}
+.h-contour{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
+.h-hero-in{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:36px;align-items:center;padding:56px 48px 80px}
+.h-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.04em;color:#a9cfca;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px}
+.h-eyebrow i{width:7px;height:7px;border-radius:50%;background:#e9b949;display:inline-block}
+.h-copy h1{font-size:clamp(32px,4.4vw,56px);line-height:1.14;letter-spacing:-.035em;margin:18px 0 16px;font-weight:800}
+.h-copy h1 em,.h-vision h2 em{font-style:normal;color:#e9b949}
+.h-lead{font-size:clamp(15px,1.4vw,17.5px);color:#d4e6e3;margin:0 0 26px;max-width:600px;line-height:1.7}
+.h-ctas{display:flex;gap:10px;flex-wrap:wrap}
+.h-btn{border:1px solid transparent;border-radius:11px;padding:12px 18px;font-size:15px;font-weight:750;cursor:pointer;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease}
+.h-btn:hover{transform:translateY(-1px)}
+.h-btn.pri{background:#e9b949;color:#1b1404}
+.h-btn.pri:hover{box-shadow:0 10px 24px rgba(233,185,73,.32)}
+.h-btn.ghost{background:rgba(255,255,255,.07);color:#f2f7f6;border-color:rgba(255,255,255,.24)}
+.h-btn.big{padding:14px 22px;font-size:16px}
+.h-artbox{margin:0;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px}
+.h-artbox canvas{display:block;width:100%;aspect-ratio:4/3.4;border-radius:12px}
+.h-artbox figcaption{font-size:12.5px;color:#b9d6d1;margin:8px 4px 2px;line-height:1.55}
+.h-artbox figcaption b{color:#fff}
+.h-stats{display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface);border:1px solid var(--border);border-radius:16px;margin:-42px 28px 0;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.h-stat{padding:18px 18px;border-right:1px solid var(--border)}
+.h-stat:last-child{border-right:0}
+.h-stat b{display:block;font-size:24px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.h-stat b small{font-size:13px;color:var(--ink-2);margin-left:2px}
+.h-stat span{font-size:12.5px;color:var(--muted)}
+.h-sec{padding:72px 4px 0}
+.h-kick{font-size:12.5px;font-weight:800;letter-spacing:.09em;color:var(--brand);text-transform:uppercase}
+.h-kick.light{color:#e9b949}
+.h-sec h2,.h-vision h2,.h-cta h2{font-size:clamp(24px,3vw,36px);letter-spacing:-.03em;line-height:1.25;margin:8px 0 12px}
+.h-intro{color:var(--ink-2);max-width:780px;font-size:15.5px;margin:0}
+.h-about{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:start}
+.h-about p{color:var(--ink-2);font-size:15.5px;line-height:1.75}
+.h-quote{border-left:3px solid var(--brand);margin:18px 0 0;padding:6px 0 6px 16px;font-size:18px;font-weight:750;letter-spacing:-.02em}
+.h-services{display:grid;gap:12px}
+.h-svc{display:grid;grid-template-columns:46px 1fr;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+.h-svc span{width:46px;height:46px;border-radius:12px;background:var(--accent-wash);display:grid;place-items:center;font-size:22px}
+.h-svc b{font-size:16px}
+.h-svc p{margin:3px 0 0;font-size:14px;color:var(--ink-2);line-height:1.6}
+.h-vision{position:relative;margin-top:72px;border-radius:22px;overflow:hidden;background:#0b3f3a;color:#f2f7f6}
+.h-vin{position:relative;padding:52px 48px}
+.h-vin > p{color:#d4e6e3;max-width:720px;font-size:16px;margin:0}
+.h-values{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px}
+.h-values > div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.h-values svg{width:40px;height:40px;color:#e9b949}
+.h-values b{font-size:16px}
+.h-values span{font-size:13.5px;color:#c4dcd8;line-height:1.55}
+.h-gal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.h-gal figure{margin:0;background:#0b2a27;border-radius:16px;padding:10px;border:1px solid var(--border)}
+.h-gal canvas{display:block;width:100%;aspect-ratio:1/1;border-radius:10px}
+.h-gal figcaption{font-size:12.5px;color:#b9d6d1;margin:8px 4px 2px}
+.h-gal figcaption b{color:#fff}
+.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.h-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.h-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 18px 16px;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.h-card:hover{transform:translateY(-3px);border-color:var(--brand);box-shadow:0 14px 34px rgba(14,94,87,.13)}
+.h-card.feat{border-color:var(--brand);background:linear-gradient(160deg,var(--surface) 55%,var(--accent-wash))}
+.h-no{position:absolute;top:14px;right:16px;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em}
+.h-badge{position:absolute;top:12px;right:44px;font-size:11px;font-weight:800;color:var(--brand-ink);background:var(--brand);border-radius:999px;padding:2px 9px}
+.h-hd{display:flex;gap:12px;align-items:center}
+.h-ic{width:44px;height:44px;border-radius:12px;background:var(--accent-wash);display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+.h-hd b{display:block;font-size:17px;letter-spacing:-.02em}
+.h-hd small{font-size:12px;color:var(--muted);font-weight:600}
+.h-mini{height:84px;margin:12px 0 4px;border-radius:10px;background:var(--surface-2)}
+.h-card p{color:var(--ink-2);font-size:14px;margin:8px 0 8px;line-height:1.6}
+.h-card ul{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:4px}
+.h-card li{font-size:13px;color:var(--ink-2);padding-left:16px;position:relative}
+.h-card li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--brand-2);opacity:.8}
+.h-go{margin-top:auto;border:0;border-top:1px solid var(--border);background:none;padding:12px 0 0;display:flex;justify-content:space-between;font-weight:750;color:var(--brand);font-size:14.5px;cursor:pointer;text-align:left}
+.h-go span{transition:transform .18s ease}
+.h-card:hover .h-go span{transform:translateX(4px)}
+.h-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.h-steps > div{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.h-steps span{font-size:12px;font-weight:800;color:var(--brand);letter-spacing:.08em}
+.h-steps b{display:block;font-size:16.5px;margin:6px 0 4px}
+.h-steps p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.6}
+.h-cta{position:relative;margin-top:72px;border-radius:22px;overflow:hidden;background:#0b3f3a;color:#f2f7f6;padding:40px 44px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.h-cta > *:not(.h-contour){position:relative}
+.h-cta p{margin:0;color:#cfe3e0;font-size:14.5px;max-width:720px}
+/* ===== 전체 보기 ===== */
+.allhead{display:none}
+.allmode #v-home{display:none!important}
+.allmode .view.on{padding-top:12px;margin-bottom:34px}
+.allmode .allhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--brand);border-radius:12px;padding:12px 16px;margin:0 0 14px;box-shadow:var(--shadow)}
+.allhead .ah-n{font-size:12px;font-weight:800;color:var(--brand);letter-spacing:.06em}
+.allhead .ah-ic{font-size:20px}
+.allhead b{font-size:18px;letter-spacing:-.02em}
+.allhead small{color:var(--muted);font-weight:600}
+#fabTop{position:fixed;right:18px;bottom:18px;z-index:1200;display:none;border:0;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-weight:750;padding:11px 16px;box-shadow:0 8px 22px rgba(0,0,0,.18);cursor:pointer}
+.allmode #fabTop{display:block}
+@media (max-width:1100px){.h-hero-in,.h-about{grid-template-columns:1fr}.h-values{grid-template-columns:repeat(2,1fr)}.h-gal,.h-grid,.h-steps{grid-template-columns:repeat(2,1fr)}.h-stats{grid-template-columns:repeat(3,1fr)}.h-stat:nth-child(3){border-right:0}.h-stat:nth-child(-n+3){border-bottom:1px solid var(--border)}}
+@media (max-width:640px){.h-hero-in{padding:32px 20px 70px}.h-vin{padding:32px 20px}.h-cta{padding:28px 20px}.h-stats{grid-template-columns:repeat(2,1fr);margin:-40px 8px 0}.h-stat{border-right:1px solid var(--border)!important;border-bottom:1px solid var(--border)}.h-stat:nth-child(2n){border-right:0!important}.h-stat:nth-last-child(-n+2){border-bottom:0}.h-stat b{font-size:20px}.h-values,.h-gal,.h-grid,.h-steps{grid-template-columns:1fr}.h-sec{padding-top:52px}.tab-all{margin-left:0}}
+@media print{.allhead{display:flex!important}#fabTop{display:none!important}}
+/* loader */
+#loader{position:fixed;inset:0;background:var(--page);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:5000}
+#loader .bar{width:220px;height:4px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+#loader .bar i{display:block;height:100%;width:40%;background:var(--brand);border-radius:4px;animation:ld 1.1s ease-in-out infinite}
+@keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.method h2{font-size:17px;margin:22px 0 8px}
+.method p,.method li{color:var(--ink-2);max-width:960px}
+.method table{max-width:980px;display:block;overflow-x:auto}
+.method table.t td{white-space:normal;max-width:none;min-width:90px}
+footer{max-width:1480px;margin:0 auto;padding:18px 20px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+.leaflet-container{background:var(--surface-2);font-family:var(--font)}
+.leaflet-popup-content{font-size:12.5px;line-height:1.5;margin:10px 12px}
+.leaflet-popup-content b{font-size:13px}
+.mlegend{background:var(--surface);color:var(--ink-2);padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-size:11.5px;line-height:1.6;max-width:220px}
+.mlegend b{color:var(--ink);font-size:12px}
+@media (max-width:1100px){.c3{grid-column:span 6}.c4,.c5,.c7,.c8{grid-column:span 12}.c6{grid-column:span 12}.rlayout{grid-template-columns:1fr}}
+@media (max-width:640px){
+  main{padding:12px 12px 40px}.top-in{padding:8px 12px}.c3{grid-column:span 12}
+  .brand-t span{display:none}.pill{display:none}
+  .fbar{padding:10px}.fbar select,.fbar input[type=text]{min-width:0;width:100%}.fbar label{flex:1 1 140px}
+  .kpi .v{font-size:19px}.hero h1{font-size:19px}.ch{height:260px}.mapbox{height:360px}
+}
+@media print{
+  .top,.fbar,.tabs,footer,.noprint,#loader{display:none!important}
+  body{background:#fff}.card,.kpi{box-shadow:none;break-inside:avoid}
+  .view{display:none!important}.view.on{display:block!important}
+  .rlayout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="loader"><svg width="44" height="44" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="9" fill="var(--brand)"/><path d="M9 26c4-7 8-7 11-3s7 4 11-3M9 19c4-7 8-7 11-3s7 4 11-3M9 12c4-6 8-6 11-2s7 3 11-3" fill="none" stroke="var(--brand-ink)" stroke-width="2" stroke-linecap="round"/></svg><div class="bar"><i></i></div><div id="loadmsg" style="color:var(--muted);font-size:13px">아산시 빅데이터를 불러오는 중…</div></div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="9" fill="var(--brand)"/><path d="M9 26c4-7 8-7 11-3s7 4 11-3M9 19c4-7 8-7 11-3s7 4 11-3M9 12c4-6 8-6 11-2s7 3 11-3" fill="none" stroke="var(--brand-ink)" stroke-width="2" stroke-linecap="round"/></svg>
+      <div class="brand-t"><b>터무늬 부동산 인텔리전스</b><span>TERMUNI Real Estate Intelligence · 터무니없는 감 대신, 터무늬 있는 데이터</span></div>
+    </div>
+    <div class="top-sp"></div>
+    <span class="pill">📍 충청남도 아산시 · 17개 읍면동</span>
+    <button class="icon-btn noprint" id="printBtn" title="현재 화면 인쇄/PDF 저장">🖨 인쇄</button>
+    <button class="icon-btn noprint" id="themeBtn" title="밝은/어두운 화면 전환">◐ 화면</button>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab on" data-v="home">🏠 홈</button>
+    <button class="tab" data-v="ov">📊 종합 개요</button>
+    <button class="tab" data-v="pop">👥 인구 구조</button>
+    <button class="tab" data-v="sale">🏢 매매 시장</button>
+    <button class="tab" data-v="rent">🔑 전월세 시장</button>
+    <button class="tab" data-v="job">🏭 일자리·사업장</button>
+    <button class="tab" data-v="store">🏪 상권 분석</button>
+    <button class="tab" data-v="cmp">🆚 연도 비교</button>
+    <button class="tab" data-v="rad">🎯 반경 분석</button>
+    <button class="tab" data-v="meth">ℹ️ 데이터·방법론</button>
+    <button class="tab tab-all" data-v="all">📚 9개 탭 전체 보기</button>
+  </nav>
+  <div class="geobar" id="geobar"><div class="geobar-in">
+    <span class="gb-t">📍 반경 필터</span>
+    <div class="search gsearch"><input type="search" id="g-q" placeholder="주소·단지명·상호 입력 또는 지도 클릭" autocomplete="off"><div class="sug" id="g-sug"></div></div>
+    <select id="g-r" title="반경"></select>
+    <label class="gchk" title="끄면 지도 클릭이 반경 지정에 쓰이지 않습니다"><input type="checkbox" id="g-click" checked> 지도 클릭으로 지정</label>
+    <span id="g-st" class="gst"></span>
+    <button class="icon-btn" id="g-off" style="display:none">✕ 반경 해제</button>
+  </div></div>
+</header>
+
+<main>
+<!-- ============ 종합 개요 ============ -->
+<section class="view on" id="v-home">
+  <div class="h-hero">
+    <svg class="h-contour" id="h-contour" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+    <div class="h-hero-in">
+      <div class="h-copy">
+        <span class="h-eyebrow"><i></i>아산 부동산 빅데이터 컨설팅 · TERMUNI</span>
+        <h1>터무니없는 감 대신,<br><em>터무늬</em> 있는 데이터</h1>
+        <p class="h-lead">아산에서 15년, 현장에서 쌓은 감각에 <b>인구·일자리·실거래·상권 빅데이터</b>를 더했습니다. 읍면동에서 단지까지, 그리고 내가 고른 주소의 <b>반경 100m~2km</b>까지 — 판단의 근거를 숫자와 지도로 보여 드립니다.</p>
+        <div class="h-ctas"><button class="h-btn pri" data-go="all">📚 9개 탭 전체 보기</button><button class="h-btn ghost" data-go="rad">🎯 주소로 반경 분석</button><button class="h-btn ghost" data-go="ov">📊 종합 개요부터</button></div>
+      </div>
+      <figure class="h-artbox"><canvas id="h-art" aria-label="아산시 100m 격자 인구를 색으로 그린 그림"></canvas>
+        <figcaption><b>아산의 터무늬</b> · 2025년 10월 100m 격자 인구 <span id="h-p1"></span> (2021년 대비 <span id="h-p2"></span>) — 사진이 아니라 <b>실제 데이터로 그린 그림</b>입니다. 파랑→빨강일수록 사람이 많습니다.</figcaption></figure>
+    </div>
+  </div>
+  <div class="h-stats" id="h-stats"></div>
+
+  <div class="h-sec h-about">
+    <div>
+      <div class="h-kick">About 터무늬</div>
+      <h2>땅에 새겨진 무늬를 읽는<br>부동산 컨설팅</h2>
+      <p><b>'터무늬'</b>는 땅을 뜻하는 <b>'터'</b>와 결을 뜻하는 <b>'무늬'</b>를 합친 이름입니다. 사람이 모이고, 일자리가 생기고, 집값과 월세가 움직이는 데에는 언제나 땅 위에 새겨진 패턴이 있습니다. 터무늬는 그 패턴을 데이터로 읽어 드립니다.</p>
+      <p>아산테크노밸리에서 <b>15년간 중개 현장</b>을 지켜 온 경험 위에 공공 빅데이터와 공간분석(GIS)을 결합했습니다. "요즘 거기 괜찮대요"가 아니라 <b>"반경 500m 안 30~40대가 몇 명 늘었고, 같은 단지 가격은 얼마나 변했는지"</b>로 이야기합니다.</p>
+      <blockquote class="h-quote">"감(感)은 현장에서, 근거는 데이터에서."</blockquote>
+    </div>
+    <div class="h-services">
+      <div class="h-kick">What we do</div>
+      <div class="h-svc"><span>🤝</span><div><b>매매·임대 중개</b><p>단지별 실거래·동일단지 지수·전세가율로 적정 가격과 위험을 함께 설명합니다.</p></div></div>
+      <div class="h-svc"><span>🏗️</span><div><b>개발·부지 검토</b><p>반경 안 인구 구조·일자리·상권과 지적도로 개발 수요와 입지를 점검합니다.</p></div></div>
+      <div class="h-svc"><span>🗂️</span><div><b>자산 관리</b><p>월세 시세·월세화 추이·전환율로 임대 수익 구조를 관리합니다.</p></div></div>
+      <div class="h-svc"><span>⚖️</span><div><b>부동산 법령 상담</b><p>갱신요구권 사용률 등 임대차 흐름을 근거로 계약 전 확인할 점을 안내합니다.</p></div></div>
+    </div>
+  </div>
+
+  <div class="h-vision">
+    <svg class="h-contour" id="h-contour2" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+    <div class="h-vin">
+      <div class="h-kick light">Vision</div>
+      <h2>아산의 모든 부동산 결정에<br><em>근거</em>를 남깁니다</h2>
+      <p>누구나 같은 숫자를 보고, 같은 지도 위에서 이야기하는 부동산 시장. 터무늬는 고객이 스스로 확인하고 판단할 수 있도록 분석을 숨기지 않고 공개합니다.</p>
+      <div class="h-values">
+        <div><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 36 18 22l8 8 16-18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="42" cy="12" r="3" fill="currentColor"/></svg><b>보이는 데이터</b><span>실거래 12만 건과 격자 인구를 모두 화면에 공개</span></div>
+        <div><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="24" r="10" fill="none" stroke="currentColor" stroke-width="3" opacity=".6"/><circle cx="24" cy="24" r="3" fill="currentColor"/></svg><b>반경 단위의 정밀함</b><span>동네가 아니라 내 집 앞 100m~2km</span></div>
+        <div><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 40V18l16-10 16 10v22" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M19 40V28h10v12" fill="none" stroke="currentColor" stroke-width="3"/></svg><b>현장의 해석</b><span>15년 아산 현장 경험으로 숫자의 이유를 설명</span></div>
+        <div><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 8h20l8 8v24H10z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M16 24h16M16 31h16M16 17h8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><b>투명한 근거</b><span>출처·처리 방법·위치 오차까지 공개</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="h-sec">
+    <div class="h-kick">Gallery</div>
+    <h2>데이터로 그린 아산의 무늬</h2>
+    <p class="h-intro">세 장 모두 사진이 아니라 대시보드 데이터로 직접 그린 그림입니다. 같은 땅도 무엇으로 그리느냐에 따라 다른 무늬가 보입니다.</p>
+    <div class="h-gal">
+      <figure><canvas id="h-g1"></canvas><figcaption><b>상권의 무늬</b> · 상가 16,181곳을 업종 대분류 색으로</figcaption></figure>
+      <figure><canvas id="h-g2"></canvas><figcaption><b>가격의 무늬</b> · 최근 2년 아파트 위치별 평당가 (터보: 파랑 낮음 → 빨강 높음)</figcaption></figure>
+      <figure><canvas id="h-g3"></canvas><figcaption><b>변화의 무늬</b> · 2021→2025 격자 인구 증감 (파랑 감소 · 빨강 증가)</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="h-sec" id="h-dash">
+    <div class="h-row"><div><div class="h-kick">Dashboard</div><h2>9개 분석, 전체로 또는 하나씩</h2>
+      <p class="h-intro">한 페이지에서 9개 분석을 차례로 훑어보려면 <b>전체 보기</b>, 하나를 깊게 보려면 각 카드의 단추를 누르세요. 맨 위 <b>📍 반경 필터</b>를 켜면 모든 분석이 반경 안 데이터로 바뀝니다.</p></div>
+      <button class="h-btn pri big" data-go="all">📚 9개 탭 전체 보기 →</button></div>
+    <div class="h-grid" id="h-tabs"></div>
+  </div>
+
+  <div class="h-sec">
+    <div class="h-kick">How to use</div>
+    <h2>세 단계면 충분합니다</h2>
+    <div class="h-steps">
+      <div><span>STEP 1</span><b>분석 고르기</b><p>전체 보기로 훑거나, 궁금한 분석 카드를 눌러 하나씩 엽니다. 읍면동·유형·면적·기간 필터로 범위를 좁힙니다.</p></div>
+      <div><span>STEP 2</span><b>주소·지도로 반경 지정</b><p>맨 위 📍 반경 필터에 주소·단지명·상호를 넣거나 지도 빈 곳을 클릭하면 모든 분석이 반경 안으로 다시 계산됩니다.</p></div>
+      <div><span>STEP 3</span><b>저장하고 상담하기</b><p>🖨 인쇄로 PDF를 저장하고 상가 목록은 CSV로 내려받습니다. 같은 숫자를 함께 보며 상담하면 결정이 빨라집니다.</p></div>
+    </div>
+  </div>
+
+  <div class="h-cta">
+    <svg class="h-contour" id="h-contour3" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+    <div><h2>내 매물, 내 상가 자리의 터무늬가 궁금하다면</h2><p>주소 하나로 반경 안의 사람·일자리·거래·상권을 바로 확인해 보세요. 이 자료는 공공데이터를 가공한 참고 자료이며 법적 효력이 없습니다.</p></div>
+    <button class="h-btn pri" data-go="rad">🎯 반경 분석 시작 →</button>
+  </div>
+</section>
+
+<section class="view" id="v-ov">
+  <div class="hero"><div><h1>아산시 부동산 시장 한눈에 보기</h1><p>인구(2021~2025) · 일자리(2022~2026) · 실거래 12.3만 건(2021.10~2026.10) · 상가 1.6만 곳을 하나로 엮어, 읍면동마다 <b>수요(사람·일자리)</b>와 <b>가격·거래</b>가 어떻게 움직였는지 보여줍니다.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <p class="note gonly" style="display:none;margin:-6px 0 10px">반경 필터가 켜지면 <b>위쪽 KPI 카드</b>만 반경 기준으로 바뀌고, 아래 버블·스코어·상관행렬·지표표는 읍면동끼리 비교하는 용도라 그대로 둡니다.</p>
+  <div class="kpis" id="ov-kpis"></div>
+  <div class="grid">
+    <div class="card c7"><div class="card-h"><div><h3>수요 성장 vs 가격 상승 — 읍면동 포지셔닝</h3><p class="sub">가로: 인구 증감률(21→25) · 세로: 아파트 <b>동일단지 가격지수</b> 상승률(21-22→25-26) · 원 크기: 5년 매매 거래량</p></div><span class="tag tools">버블 차트</span></div><div class="ch h420" id="ov-bubble"></div><p class="note">오른쪽 위 = 사람도 늘고 값도 오른 곳 · 오른쪽 아래 = 사람은 느는데 값이 덜 오른 곳(저평가 후보) · 아파트 거래가 30건 미만이거나 인구 격자 비공개가 많은 면 지역은 제외 · 동일단지 지수는 같은 단지·같은 면적대끼리만 비교해 신축 입주 같은 '구성 효과'를 걸러냅니다</p></div>
+    <div class="card c5"><div class="card-h"><div><h3>유망 입지 스코어</h3><p class="sub">가중치를 직접 움직여 보세요. 각 지표를 표준화(z점수)해 가중합한 뒤 0~100점으로 환산합니다 · 인구 격자 비공개가 많은 송악·선장·도고·영인면은 평가에서 제외</p></div><span class="tag tools">다기준 평가</span></div>
+      <div id="ov-weights"></div><div class="ch h360" id="ov-score"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>읍면동 프로필 레이더</h3><p class="sub">선택한 읍면동(실선)과 아산시 중앙값(회색)의 지표별 백분위 비교 · 스코어 막대나 표를 클릭하세요</p></div></div><div class="ch h360" id="ov-radar"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3>지표 간 상관관계 행렬</h3><p class="sub">17개 읍면동 기준 피어슨 상관계수(r) · 파랑=같이 움직임, 빨강=반대로 움직임</p></div><span class="tag tools">통계</span></div><div class="ch h360" id="ov-corr"></div><p class="note">표본이 17개 읍면동뿐이라 |r|이 0.5 미만이면 우연일 수 있습니다. 상관관계는 인과관계가 아닙니다.</p></div>
+    <div class="card c12"><div class="card-h"><div><h3>읍면동 종합 지표표</h3><p class="sub">열 제목을 누르면 정렬, 행을 누르면 레이더에 반영됩니다 · 인구 1천 명 미만(격자 비공개 多) 지역의 인구 기반 지표는 '–' 처리 · 평당가는 전용면적 3.3㎡ 기준</p></div></div><div class="scroll" style="max-height:520px" id="ov-table"></div></div>
+  </div>
+</section>
+
+<!-- ============ 인구 ============ -->
+<section class="view" id="v-pop">
+  <div class="hero"><div><h1>인구 구조 분석</h1><p>100m 격자 단위 성별·연령별 인구(매년 10월)를 읍면동·연도로 비교합니다. 연령대 이동은 곧 <b>주택 수요의 이동</b>입니다.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>읍면동<select id="pop-dong"></select></label>
+    <label>기준 연도<select id="pop-y"></select></label>
+    <label>비교 연도<select id="pop-y0"></select></label>
+    <label>지도 표시<span class="seg" id="pop-mode"><button data-v="lvl" class="on">인구 수</button><button data-v="chg">증감</button></span></label>
+    <label>지도 연령<select id="pop-age"></select></label>
+    <span class="fnote">유소년 칸은 다른 연령과 겹쳐 합계에서 제외 · 5명 이하 칸은 0으로 공개됨(추정)</span>
+  </div>
+  <div class="kpis" id="pop-kpis"></div>
+  <div class="grid">
+    <div class="card c5"><div class="card-h"><div><h3>인구 피라미드</h3><p class="sub">진한 막대=기준 연도 · 옅은 막대=비교 연도</p></div></div><div class="ch h420" id="pop-pyr"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3>격자 인구 지도 (100m)</h3><p class="sub">격자를 클릭하면 연령별 상세가 나옵니다</p></div></div><div class="mapbox" id="pop-map"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>연령 구조 변화</h3><p class="sub">연도별 연령 그룹 구성비(%)</p></div></div><div class="ch" id="pop-struct"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>연령대별 증감</h3><p class="sub">비교 연도 → 기준 연도, 명</p></div></div><div class="ch" id="pop-agechg"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>인구 추이 (남·여)</h3><p class="sub">매년 10월 기준</p></div></div><div class="ch" id="pop-trend"></div></div>
+    <div class="card c12"><div class="card-h"><div><h3>읍면동별 인구 증감</h3><p class="sub">비교 연도 → 기준 연도 · 막대=증감 인원, 툴팁에 증감률</p></div></div><div class="ch h360" id="pop-dongchg"></div></div>
+  </div>
+</section>
+
+<!-- ============ 매매 ============ -->
+<section class="view" id="v-sale">
+  <div class="hero"><div><h1>매매 시장 분석</h1><p>국토교통부 실거래가 기반 · 분석연도는 <b>그해 10월 21일 ~ 다음 해 10월 20일</b>입니다(예: 2025 = 25.10.21~26.10.20). 해제된 거래는 기본으로 제외합니다. 평당가는 <b>전용면적 3.3㎡당</b>(단독·다가구는 연면적) 금액이라 분양 광고의 공급면적 평당가보다 높게 나옵니다.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>주택 유형<span class="seg" id="sale-type"></span></label>
+    <label>읍면동<select id="sale-dong"></select></label>
+    <label>면적(전용·연면적)<select id="sale-area"></select></label>
+    <label>시작 연도<select id="sale-y0"></select></label>
+    <label>끝 연도<select id="sale-y1"></select></label>
+    <label class="chk"><input type="checkbox" id="sale-cancel" checked> 해제거래 제외</label>
+  </div>
+  <div class="kpis" id="sale-kpis"></div>
+  <div class="grid">
+    <div class="card c12"><div class="card-h"><div><h3>실거래 지도</h3><p class="sub">위 조건(유형·읍면동·면적·기간) 그대로 · 같은 위치 거래를 묶어 <b>원 크기=거래 건수, 색=선택 지표(터보)</b> · 원을 누르면 단지와 건수 · 단독·다가구는 번지 비공개라 도로 단위 위치</p></div><span class="tools"><span class="seg" id="sale-mm"><button data-v="pp" class="on">평당가</button><button data-v="amt">거래금액</button><button data-v="n">거래량</button></span></span></div><div class="mapbox h480" id="sale-map"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>월별 거래량</h3><p class="sub">계약일 기준 · 최근 1~2개월은 신고 지연으로 적게 보일 수 있음</p></div></div><div class="ch" id="sale-vol"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>평당가 추세 (중앙값 · 사분위 범위)</h3><p class="sub">진한 선=월 중앙값의 3개월 이동평균 · 띠=25~75% 구간 (만원/3.3㎡)</p></div><span class="tag tools">IQR 밴드</span></div><div class="ch" id="sale-trend"></div></div>
+    <div class="card c12"><div class="card-h"><div><h3>가격지수: 동일단지 체인지수 vs 단순 중앙값 (21-22 = 100)</h3><p class="sub">동일단지 지수는 같은 단지·같은 면적대끼리 전년 대비 변화만 연결(가중 기하평균)해, 신축 입주·노후 단지 거래 비중 변화 같은 <b>구성 효과</b>를 걸러낸 실제 가격 변화입니다</p></div><span class="tag tools">헤도닉 대안 · 반복거래형</span></div><div class="ch" id="sale-index"></div><p class="note" id="sale-index-n"></p></div>
+    <div class="card c7"><div class="card-h"><div><h3>읍면동별 평당가 분포</h3><p class="sub">상자=25~75%, 가운데 선=중앙값, 수염=1.5×IQR · 거래 5건 이상</p></div><span class="tag tools">박스플롯</span></div><div class="ch h360" id="sale-box"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>평당가 히스토그램 + 커널밀도</h3><p class="sub">막대=거래 수 · 선=KDE(가우시안) 추정</p></div><span class="tag tools">KDE</span></div><div class="ch h360" id="sale-hist"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>면적 vs 거래금액 (회귀분석)</h3><p class="sub">점=개별 거래(최대 4,000건 표본) · 선=최소제곱 회귀선</p></div><span class="tag tools">OLS</span></div><div class="ch h360" id="sale-scatter"></div><p class="note" id="sale-ols"></p></div>
+    <div class="card c6"><div class="card-h"><div><h3>건축연도별 평당가 (연식 효과)</h3><p class="sub">점=개별 거래 · 선=건축연도 구간별 중앙값</p></div></div><div class="ch h360" id="sale-age"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>층별 평당가</h3><p class="sub">층 구간별 중앙값 (아파트·오피스텔·연립)</p></div></div><div class="ch" id="sale-floor"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>거래 방식 · 거래 주체</h3><p class="sub">직거래 비율 · 매수/매도 법인 비율 (거래 주체가 공개된 23-24년부터)</p></div></div><div class="ch" id="sale-party"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>일별 거래 캘린더</h3><p class="sub">날짜별 계약 건수</p></div><span class="tools"><select id="sale-cal-y" style="height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface)"></select></span></div><div class="ch" id="sale-cal"></div></div>
+    <div class="card c12"><div class="card-h"><div><h3>단지·건물 랭킹</h3><p class="sub">단지명으로 검색하고, 행을 누르면 아래에 거래 이력이 나옵니다 · 전세가율=같은 면적대끼리 비교한 최근 연도 가중평균 (단독·다가구 제외)</p></div><span class="tools"><input type="search" id="sale-cx-q" placeholder="단지명 검색" style="height:30px;border:1px solid var(--border);border-radius:8px;padding:0 10px;background:var(--surface)"></span></div><div class="scroll" style="max-height:420px" id="sale-cx"></div></div>
+    <div class="card c12" id="sale-cxd-card" style="display:none"><div class="card-h"><div><h3 id="sale-cxd-t">단지 거래 이력</h3><p class="sub">점=개별 거래 평당가(매매) / 전세 보증금 평당가 · 계약일 기준</p></div></div><div class="ch h360" id="sale-cxd"></div></div>
+  </div>
+</section>
+
+<!-- ============ 전월세 ============ -->
+<section class="view" id="v-rent">
+  <div class="hero"><div><h1>전월세 시장 분석</h1><p>전세와 월세 계약, 갱신 계약, 갱신요구권 사용 여부까지 담긴 임대차 신고 자료입니다. <b>전세가율</b>과 <b>전월세전환율</b>로 임대 시장의 체온을 잽니다.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>주택 유형<span class="seg" id="rent-type"></span></label>
+    <label>읍면동<select id="rent-dong"></select></label>
+    <label>면적<select id="rent-area"></select></label>
+    <label>시작 연도<select id="rent-y0"></select></label>
+    <label>끝 연도<select id="rent-y1"></select></label>
+  </div>
+  <div class="kpis" id="rent-kpis"></div>
+  <div class="grid">
+    <div class="card c12"><div class="card-h"><div><h3>전월세 지도</h3><p class="sub">위 조건 그대로 · 같은 위치 계약을 묶어 <b>원 크기=계약 건수, 색=선택 지표(터보)</b> · 월세 비중은 계약 3건 이상 위치만</p></div><span class="tools"><span class="seg" id="rent-mm"><button data-v="jeon" class="on">전세 보증금</button><button data-v="wol">월세</button><button data-v="share">월세 비중</button><button data-v="n">계약량</button></span></span></div><div class="mapbox h480" id="rent-map"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>월세화 추이 — 유형별 월세 비중</h3><p class="sub">분기별 전월세 계약 중 월세 비율(%) · 선택한 읍면동 기준</p></div></div><div class="ch" id="rent-share"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>전세 보증금 추세</h3><p class="sub">월 중앙값 3개월 이동평균 · 띠=25~75% (만원)</p></div><span class="tag tools">IQR 밴드</span></div><div class="ch" id="rent-jeonse"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>월세 분포</h3><p class="sub">월세 계약의 월세 금액 히스토그램(만원) + 보증금 구간 비교</p></div></div><div class="ch" id="rent-mhist"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>읍면동별 월세 박스플롯</h3><p class="sub">월세(만원) · 계약 5건 이상</p></div><span class="tag tools">박스플롯</span></div><div class="ch" id="rent-box"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3>아파트 전세가율 분포</h3><p class="sub">같은 단지·같은 면적대·같은 연도의 (전세 중앙값 ÷ 매매 중앙값) · 연도</p></div><span class="tools"><select id="rent-jr-y" style="height:28px;border:1px solid var(--border);border-radius:6px;background:var(--surface)"></select></span></div><div class="ch h360" id="rent-jr"></div><p class="note">80% 이상은 매매가 하락 시 보증금 회수 위험이 커지는 구간(이른바 깡통전세 주의)으로 흔히 봅니다. 참고 기준일 뿐 개별 판단은 등기·시세 확인이 필요합니다.</p></div>
+    <div class="card c5"><div class="card-h"><div><h3>전세가율 주의 단지</h3><p class="sub">전세가율 높은 순 · 매매·전세 각 2건 이상</p></div></div><div class="scroll" style="max-height:380px" id="rent-jr-t"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>전월세전환율 (추정)</h3><p class="sub">아파트 월세 계약을 같은 단지·면적대 전세 중앙값과 비교: 월세×12 ÷ (전세−월세보증금)</p></div><span class="tag tools">추정</span></div><div class="ch" id="rent-conv"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>갱신 계약 분석</h3><p class="sub">막대=갱신 계약 비중 · 선=갱신요구권 사용 비중(갱신 중) (%)</p></div></div><div class="ch" id="rent-renew"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>갱신 시 보증금 변동률</h3><p class="sub">종전 보증금 대비 갱신 보증금 변화(%) 분포 · 전세 갱신 계약</p></div></div><div class="ch" id="rent-renewchg"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>면적 vs 월세 (회귀분석)</h3><p class="sub">월세 계약, 보증금 1억 미만 · 선=최소제곱 회귀선</p></div><span class="tag tools">OLS</span></div><div class="ch" id="rent-scatter"></div><p class="note" id="rent-ols"></p></div>
+  </div>
+</section>
+
+<!-- ============ 일자리 ============ -->
+<section class="view" id="v-job">
+  <div class="hero"><div><h1>일자리·사업장 분석</h1><p>국민연금 가입 사업장 기준. 종사자는 곧 <b>주거 수요</b>입니다. 업종·규모·고용 회전과 추정 소득 수준을 봅니다.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>기준월<select id="job-m"></select></label>
+    <label>비교 기준월<select id="job-m0"></select></label>
+    <label>읍면동<select id="job-dong"></select></label>
+    <label>사업장 형태<span class="seg" id="job-corp"><button data-v="1" class="on">법인만</button><button data-v="all">법인+개인</button></span></label>
+    <label>업종 검색<input type="search" id="job-q" placeholder="예: 반도체, 자동차"></label>
+    <span class="fnote">22~24년 자료는 법인만 있어 연도 비교는 '법인만'을 권장</span>
+  </div>
+  <div class="kpis" id="job-kpis"></div>
+  <div class="grid">
+    <div class="card c7"><div class="card-h"><div><h3>업종별 종사자 트리맵</h3><p class="sub">면적=가입자 수 · 칸을 누르면 그 업종으로 검색됩니다</p></div><span class="tag tools">트리맵</span></div><div class="ch h420" id="job-tree"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>읍면동별 종사자 증감</h3><p class="sub">비교 기준월 → 기준월 (명)</p></div></div><div class="ch h420" id="job-dongchg"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>가입자 추이</h3><p class="sub">선택 조건의 기준월별 합계</p></div></div><div class="ch" id="job-trend"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>사업장 규모 분포</h3><p class="sub">가입자 수 구간별 사업장 수</p></div></div><div class="ch" id="job-size"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>고용 회전 — 업종 Top 12</h3><p class="sub">해당 월 신규 취득(+)과 상실(−) 인원</p></div></div><div class="ch" id="job-turn"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>사업장 지도</h3><p class="sub">원 크기=가입자 수 · 도로명 중심 근사 위치(정밀도 C)</p></div></div><div class="mapbox" id="job-map"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>주요 사업장</h3><p class="sub">가입자 많은 순 · 추정 월소득=고지금액÷가입자÷보험료율</p></div><span class="tools"><input type="search" id="job-tq" placeholder="사업장명 검색" style="height:30px;border:1px solid var(--border);border-radius:8px;padding:0 10px;background:var(--surface)"></span></div><div class="scroll" style="max-height:440px" id="job-table"></div></div>
+  </div>
+</section>
+
+<!-- ============ 상권 ============ -->
+<section class="view" id="v-store">
+  <div class="hero"><div><h1>상권 분석 — 소상공인 상가정보 전 필드 탐색기</h1><p>원본 39개 필드 중 좌표를 뺀 <b>37개 필드 어느 것이든</b> 골라 분포·교차분석·지도·표로 볼 수 있습니다. 조건(필터)은 여러 개를 겹쳐 걸 수 있어요.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>분석 필드 A<select id="st-fa"></select></label>
+    <label>교차 필드 B<select id="st-fb"></select></label>
+    <label>차트<span class="seg" id="st-ct"><button data-v="bar" class="on">막대</button><button data-v="pareto">파레토</button><button data-v="tree">트리맵</button><button data-v="pie">원형</button></span></label>
+    <label>상위 N<input type="number" id="st-n" value="15" min="5" max="60" style="width:80px;min-width:0"></label>
+    <span style="width:1px;height:34px;background:var(--border)"></span>
+    <label>필터 필드<select id="st-ff"></select></label>
+    <label>필터 값<input type="text" id="st-fv" list="st-fv-list" placeholder="값 입력/선택"><datalist id="st-fv-list"></datalist></label>
+    <button class="icon-btn" id="st-add" style="height:34px">＋ 조건 추가</button>
+  </div>
+  <div id="st-chips" style="margin:-6px 0 10px"></div>
+  <div class="kpis" id="st-kpis"></div>
+  <div class="grid">
+    <div class="card c7"><div class="card-h"><div><h3 id="st-a-t">필드 A 분포</h3><p class="sub" id="st-a-s"></p></div></div><div class="ch h420" id="st-a"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>업종 계층 선버스트</h3><p class="sub">대분류 → 중분류 → 소분류 · 조각을 누르면 확대</p></div><span class="tag tools">선버스트</span></div><div class="ch h420" id="st-sun"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3 id="st-x-t">교차분석 A × B</h3><p class="sub" id="st-x-s"></p></div><span class="tools"><span class="seg" id="st-xn"><button data-v="n" class="on">건수</button><button data-v="row">행%</button><button data-v="col">열%</button></span></span></div><div class="ch h420" id="st-x"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>상권 지도</h3><p class="sub">색=필드 A 상위 7개 + 기타 · 점을 누르면 상세</p></div></div><div class="mapbox" id="st-map" style="height:420px"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3>입지계수(LQ) — 읍면동 × 업종 대분류</h3><p class="sub">LQ = (읍면동 내 업종 비중) ÷ (아산 전체 업종 비중) · 빨강=특화(LQ&gt;1), 파랑=부족</p></div><span class="tag tools">입지계수</span></div><div class="ch h420" id="st-lq"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>업종 다양성 · 인구 대비 상가 밀도</h3><p class="sub">막대=인구 1천 명당 상가 수(2025 인구) · 툴팁에 중분류 섀넌 다양성 지수 · 막대 없는 곳=인구 격자 비공개가 많아 제외</p></div><span class="tag tools">섀넌 지수</span></div><div class="ch h420" id="st-div"></div></div>
+    <div class="card c12"><div class="card-h"><div><h3>상가 목록</h3><p class="sub" id="st-tbl-s"></p></div><span class="tools"><input type="search" id="st-q" placeholder="상호·주소 검색" style="height:30px;border:1px solid var(--border);border-radius:8px;padding:0 10px;background:var(--surface)"><button class="icon-btn" id="st-csv" style="height:30px">⬇ CSV</button></span></div><div class="scroll" style="max-height:440px" id="st-tbl"></div><div id="st-pg" class="note"></div></div>
+  </div>
+</section>
+
+<!-- ============ 연도 비교 ============ -->
+<section class="view" id="v-cmp">
+  <div class="hero"><div><h1>🆚 연도 비교 — 같은 지표, 두 시점</h1><p>지표와 두 연도를 고르면 <b>A년·B년 지도(같은 색 눈금)</b>와 <b>변화 지도</b>, 읍면동별 변화를 한 번에 보여줍니다. 시점 기준: 인구=그해 10월 · 실거래=그해 10.21~다음 해 10.20 · 국민연금=그해 8~9월 자료.</p></div></div>
+  <div class="gchip warnbox" style="display:none"></div>
+  <div class="fbar">
+    <label>비교 지표<select id="cmp-metric"></select></label>
+    <label>주택 유형 (실거래 지표)<select id="cmp-type"></select></label>
+    <label>A (기준·최근)<select id="cmp-a"></select></label>
+    <label>B (비교·과거)<select id="cmp-b"></select></label>
+    <label>읍면동<select id="cmp-dong"></select></label>
+  </div>
+  <div class="rbtns" id="cmp-pre" style="margin:-4px 0 12px"></div>
+  <div class="kpis" id="cmp-kpis"></div>
+  <p class="note" id="cmp-sub" style="margin:-4px 0 10px"></p>
+  <div class="grid">
+    <div class="card c6"><div class="card-h"><div><h3 id="cmp-ta">A</h3><p class="sub">한쪽 지도를 움직이면 나머지 지도도 같이 움직입니다</p></div></div><div class="mapbox h420" id="cmp-mapA"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3 id="cmp-tb">B</h3><p class="sub">A와 같은 색 눈금(터보)</p></div></div><div class="mapbox h420" id="cmp-mapB"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3 id="cmp-td">변화 지도</h3><p class="sub">A − B · 파랑=감소, 초록=변화 없음, 빨강=증가 (터보 대칭 눈금)</p></div></div><div class="mapbox h420" id="cmp-mapD"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>읍면동별 변화율</h3><p class="sub">B → A (%) · 흐린 막대 = 인구 격자 비공개가 많은 지역</p></div></div><div class="ch h420" id="cmp-rate"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>덤벨 차트 — B에서 A로</h3><p class="sub">회색 점=B, 파란 점=A · 선 색: 빨강=증가, 파랑=감소</p></div><span class="tag tools">덤벨</span></div><div class="ch h480" id="cmp-dumb"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>읍면동 비교표</h3><p class="sub">행을 누르면 그 읍면동으로 지도가 이동합니다</p></div></div><div class="scroll" style="max-height:480px" id="cmp-table"></div></div>
+  </div>
+  <p class="note" id="cmp-note"></p>
+</section>
+
+<!-- ============ 반경 분석 ============ -->
+<section class="view" id="v-rad">
+  <div class="hero"><div><h1>🎯 주소 기준 반경 분석</h1><p>주소·단지명·상호를 입력하거나 지도를 클릭하세요. 반경 <b>100m ~ 2,000m</b> 안의 인구·상권·일자리·실거래를 바로 분석하고, 100m 간격 <b>반경별 프로파일</b>로 입지의 영향권을 확인합니다.</p></div></div>
+  <div class="rlayout">
+    <div class="rpanel">
+      <div class="card">
+        <div class="search"><input type="search" id="r-q" placeholder="예) 배방로 58-11 · 장재리 1733 · 지중해마을 · 아산시청" autocomplete="off"><div class="sug" id="r-sug"></div></div>
+        <div class="note">여기서 지정한 중심·반경은 맨 위 <b>📍 반경 필터</b>와 같아서 <b>모든 탭</b>에 함께 적용됩니다. 도로명주소·지번은 <b>브이월드로 정확한 좌표</b>를 찾고, 아파트 단지명·상호명·동·리 이름은 데이터 안에서 바로 찾습니다. 지도를 클릭해도 중심이 지정됩니다. 지도 오른쪽 위 ▤ 버튼에서 위성·회색·야간 지도와 <b>지적도</b>를 켤 수 있어요.</div>
+        <div style="margin-top:12px;font-size:12px;color:var(--muted);font-weight:600">반경 <b id="r-rv" style="color:var(--brand);font-size:15px">500m</b></div>
+        <input type="range" id="r-r" min="100" max="2000" step="100" value="500">
+        <div class="rbtns" id="r-rb"></div>
+        <div style="margin-top:12px;font-size:12px;color:var(--muted);font-weight:600">위치 정밀도 포함 범위 (실거래·사업장)</div>
+        <div id="r-prec" style="display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px;font-size:12.5px"></div>
+        <details style="margin-top:10px"><summary style="cursor:pointer;font-size:12px;color:var(--muted)">고급: 브이월드 인증키 바꾸기(선택)</summary>
+          <div class="note" id="r-vnote">기본 인증키가 내장되어 있어 배경지도·지적도·주소검색이 바로 동작합니다. 다른 키를 쓰려면 입력하세요(이 브라우저에만 저장, 새로고침 후 지도 반영). 비우면 기본 키를 씁니다.</div>
+          <input type="text" id="r-vkey" placeholder="비워두면 기본 키 사용" style="width:100%;height:32px;border:1px solid var(--border);border-radius:8px;padding:0 10px;background:var(--surface);margin-top:6px">
+        </details>
+        <div class="rinfo" id="r-info" style="margin-top:12px"></div>
+        <div style="display:flex;gap:8px;margin-top:10px" class="noprint"><button class="icon-btn" id="r-print">🖨 반경 리포트 인쇄</button></div>
+      </div>
+      <div class="kpis" id="r-kpis" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"></div>
+    </div>
+    <div class="card"><div class="mapbox h560" id="r-map"></div><div class="note">● 상가(업종 대분류 색) · ■ 아파트·오피스텔·연립 단지 · ▲ 국민연금 사업장 · 격자 = 인구가 있는 100m 칸</div></div>
+  </div>
+  <div class="grid" id="r-res" style="margin-top:14px">
+    <div class="card c12"><div class="card-h"><div><h3>반경별 프로파일 (100m → 2,000m)</h3><p class="sub">반경을 넓혀 갈 때 누적 인구·상가·종사자·거래가 어떻게 늘어나는지 · 세로선=현재 반경</p></div><span class="tag tools">영향권 분석</span></div>
+      <div class="grid" style="gap:8px"><div class="c3" style="min-width:0"><div class="ch h220" id="r-p1"></div></div><div class="c3" style="min-width:0"><div class="ch h220" id="r-p2"></div></div><div class="c3" style="min-width:0"><div class="ch h220" id="r-p3"></div></div><div class="c3" style="min-width:0"><div class="ch h220" id="r-p4"></div></div></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>반경 내 인구 피라미드</h3><p class="sub">2025(진함) vs 2021(옅음)</p></div></div><div class="ch h360" id="r-pyr"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>상권 구성 vs 아산 전체</h3><p class="sub">업종 대분류 비중(%)</p></div></div><div class="ch h360" id="r-st"></div></div>
+    <div class="card c4"><div class="card-h"><div><h3>반경 내 소분류 Top 12</h3><p class="sub">상가 수</p></div></div><div class="ch h360" id="r-st2"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>반경 내 아파트 평당가 vs 아산 전체</h3><p class="sub">분석연도별 매매 평당가 중앙값(만원/3.3㎡)</p></div></div><div class="ch" id="r-price"></div></div>
+    <div class="card c6"><div class="card-h"><div><h3>반경 내 전월세</h3><p class="sub">분석연도별 계약 건수(유형 합계)</p></div></div><div class="ch" id="r-rent"></div></div>
+    <div class="card c7"><div class="card-h"><div><h3>반경 내 단지</h3><p class="sub">거리순 · 최근 연도 평당가와 전세가율</p></div></div><div class="scroll" style="max-height:380px" id="r-cx"></div></div>
+    <div class="card c5"><div class="card-h"><div><h3>반경 내 주요 사업장</h3><p class="sub">최신 기준월 가입자 순 (위치 근사)</p></div></div><div class="scroll" style="max-height:380px" id="r-job"></div></div>
+  </div>
+</section>
+
+<!-- ============ 방법론 ============ -->
+<section class="view method" id="v-meth">
+  <div class="hero"><div><h1>데이터 · 방법론 · 유의사항</h1><p>숫자를 믿고 쓰려면, 그 숫자가 어디서 왔고 어떤 한계가 있는지 알아야 합니다.</p></div></div>
+  <div class="card" id="meth-body"></div>
+</section>
+</main>
+<button id="fabTop" class="noprint" title="맨 위로">↑ 맨 위로</button>
+<footer>
+  <b>터무늬 부동산 인텔리전스</b> · 대표 컨설턴트 서재연 · 아산테크노밸리 현대공인중개사 — 본 대시보드는 공공데이터를 가공한 참고 자료이며 법적 효력이 없습니다. 투자·계약 판단 전 등기부·현장·공식 통계를 반드시 확인하세요.
+  <span id="ft-gen"></span>
+</footer>
+<script>/*ECHARTS_JS*/</script>
+<script>/*LEAFLET_JS*/</script>
+<script>/*DATA_JS*/</script>
+<script>/*APP_JS*/</script>
+</body>
+</html>
